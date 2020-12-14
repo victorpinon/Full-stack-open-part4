@@ -1,0 +1,32 @@
+{
+  "name": "full-stack-open-part4",
+  "version": "1.0.0",
+  "description": "Full stack open course - Part 4: Testing Express servers, user administration - Exercises",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js",
+    "lint": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/victorpinon/Full-stack-open-part4.git"
+  },
+  "author": "Víctor Piñón",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/victorpinon/Full-stack-open-part4/issues"
+  },
+  "homepage": "https://github.com/victorpinon/Full-stack-open-part4#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "mongoose": "^5.11.7"
+  },
+  "devDependencies": {
+    "eslint": "^7.15.0",
+    "nodemon": "^2.0.6"
+  }
+}
