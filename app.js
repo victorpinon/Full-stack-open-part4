@@ -1,10 +1,10 @@
-import blogsRouter from './controllers/blogs.js'
-import middleware from './utils/middleware.js'
-import logger from './utils/logger.js'
-import config from './utils/config.js'
-import mongoose from 'mongoose'
-import express from 'express'
-import cors from 'cors'
+const blogsRouter = require('./controllers/blogs.js')
+const middleware = require('./utils/middleware.js')
+const logger = require('./utils/logger.js')
+const config = require('./utils/config.js')
+const mongoose = require('mongoose')
+const express = require('express')
+const cors = require('cors')
 
 const app = express()
 
@@ -28,4 +28,4 @@ app.use('/api/blogs', blogsRouter)
 app.use(middleware.unknownEndpoint)
 app.use(middleware.errorHandler)
 
-export default app
+module.exports = app

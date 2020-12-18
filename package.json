@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "description": "Full stack open course - Part 4: Testing Express servers, user administration - Exercises",
   "main": "index.js",
-  "type": "module",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "dev": "cross-env NODE_ENV=development nodemon index.js",
     "lint": "eslint .",
-    "test": "jest --verbose"
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand"
   },
   "repository": {
     "type": "git",
@@ -27,9 +26,11 @@
     "mongoose": "^5.11.7"
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "eslint": "^7.15.0",
     "jest": "^26.6.3",
-    "nodemon": "^2.0.6"
+    "nodemon": "^2.0.6",
+    "supertest": "^6.0.1"
   },
   "jest": {
     "testEnvironment": "node"
