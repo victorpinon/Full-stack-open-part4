@@ -109,6 +109,49 @@ describe('deleting a blog', () => {
     })
 })
 
+describe('updating a blog', () => {
+    test('update all fields of a blog', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToUpdate = blogsAtStart[0]
+
+        const infoForUpdate = {
+            title: 'BlogX',
+            author: 'AuthorX',
+            url: 'blogX.com',
+            likes: 10
+        }
+
+        const updatedBlog = await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send(infoForUpdate)
+            .expect('Content-Type', /application\/json/)
+
+        expect(updatedBlog.body).toEqual({
+            ...infoForUpdate,
+            id: blogToUpdate.id
+        })
+    })
+
+    test('update likes of a blog', async () => {
+        const blogsAtStart = await helper.blogsInDb()
+        const blogToUpdate = blogsAtStart[0]
+
+        const infoForUpdate = {
+            likes: 99
+        }
+
+        const updatedBlog = await api
+            .put(`/api/blogs/${blogToUpdate.id}`)
+            .send(infoForUpdate)
+            .expect('Content-Type', /application\/json/)
+
+        expect(updatedBlog.body).toEqual({
+            ...blogToUpdate,
+            likes: 99
+        })
+    })
+})
+
 
 afterAll(() => {
     mongoose.connection.close()
