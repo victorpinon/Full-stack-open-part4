@@ -1,5 +1,6 @@
 const express = require('express')
 const Blog = require('../models/blog.js')
+require('express-async-errors')
 
 const blogsRouter = express.Router()
 
@@ -9,10 +10,14 @@ blogsRouter.get('/', async (request, response) => {
 })
 
 blogsRouter.post('/', async (request, response) => {
-    const blog = new Blog(request.body)
-
-    const result = await blog.save()
-    response.status(201).json(result)
+    if (request.body.title === undefined && request.body.url === undefined) {
+        response.status(400).end()
+    }
+    else {
+        const blog = new Blog(request.body)
+        const result = await blog.save()
+        response.status(201).json(result)
+    }
 })
 
 module.exports = blogsRouter
