@@ -6,12 +6,27 @@ const Blog = require('../models/blog')
 const bcrypt = require('bcrypt')
 const User = require('../models/user')
 
+let firstUser
+
 beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash = await bcrypt.hash('sekret', 10)
+    const user = new User({ username: 'root', passwordHash })
+
+    await user.save()
+
+    const initialUsers = await helper.usersInDb()
+    firstUser = initialUsers[0]
+
     await Blog.deleteMany({})
 
     const blogObjects = helper.initialBlogs
         .map(blog => new Blog(blog))
-    const promiseArray = blogObjects.map(blog => blog.save())
+    const promiseArray = blogObjects.map(blog => {
+        blog.userId = firstUser.id
+        blog.save()
+    })
     await Promise.all(promiseArray)
 })
 
@@ -44,7 +59,8 @@ describe('adding a new blog', () => {
             title: 'Blog4',
             author: 'Author4',
             url: 'blog4.com',
-            likes: 4
+            likes: 4,
+            userId: firstUser.id
         }
 
         await api
@@ -61,7 +77,8 @@ describe('adding a new blog', () => {
         const newBlog = {
             title: 'Blog5',
             author: 'Author5',
-            url: 'blog5.com'
+            url: 'blog5.com',
+            userId: firstUser.id
         }
 
         await api
@@ -77,7 +94,8 @@ describe('adding a new blog', () => {
     test('missing title and url', async () => {
         const newBlog = {
             author: 'Author6',
-            id: 6
+            id: 6,
+            userId: firstUser.id
         }
 
         await api
@@ -153,15 +171,6 @@ describe('updating a blog', () => {
 })
 
 describe('when there is initially one user in db', () => {
-    beforeEach(async () => {
-        await User.deleteMany({})
-
-        const passwordHash = await bcrypt.hash('sekret', 10)
-        const user = new User({ username: 'root', passwordHash })
-
-        await user.save()
-    })
-
     test('creation succeeds with a fresh username', async () => {
         const usersAtStart = await helper.usersInDb()
 
