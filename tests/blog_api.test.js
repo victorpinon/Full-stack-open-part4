@@ -7,6 +7,7 @@ const bcrypt = require('bcrypt')
 const User = require('../models/user')
 
 let firstUser
+let firstUserToken
 
 beforeEach(async () => {
     await User.deleteMany({})
@@ -19,10 +20,20 @@ beforeEach(async () => {
     const initialUsers = await helper.usersInDb()
     firstUser = initialUsers[0]
 
+    const tokenRes = await api
+        .post('/api/login')
+        .send({
+            username: 'root',
+            password: 'sekret'
+        })
+
+    firstUserToken = tokenRes.body.token
+
     await Blog.deleteMany({})
 
     const blogObjects = helper.initialBlogs
         .map(blog => new Blog(blog))
+
     const promiseArray = blogObjects.map(blog => {
         blog.userId = firstUser.id
         blog.save()
@@ -65,6 +76,7 @@ describe('adding a new blog', () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', 'bearer ' + firstUserToken)
             .send(newBlog)
             .expect(201)
 
@@ -83,6 +95,7 @@ describe('adding a new blog', () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', 'bearer ' + firstUserToken)
             .send(newBlog)
             .expect(201)
 
@@ -100,11 +113,29 @@ describe('adding a new blog', () => {
 
         await api
             .post('/api/blogs')
+            .set('Authorization', 'bearer ' + firstUserToken)
             .send(newBlog)
             .expect(400)
 
         const blogsAtEnd = await helper.blogsInDb()
         expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length)
+    })
+
+    test('missing token', async () => {
+        const newBlog = {
+            title: 'Blog7',
+            author: 'Author7',
+            url: 'blog7.com',
+            userId: firstUser.id
+        }
+
+        await api
+            .post('/api/blogs')
+            .send(newBlog)
+            .expect(201)
+
+        const blogsAtEnd = await helper.blogsInDb()
+        expect(blogsAtEnd.map(r => r.title)).not.toContain(newBlog.title)
     })
 })
 
@@ -115,6 +146,7 @@ describe('deleting a blog', () => {
 
         await api
             .delete(`/api/blogs/${blogToDelete.id}`)
+            .set('Authorization', 'bearer ' + firstUserToken)
             .expect(204)
 
         const blogsAtEnd = await helper.blogsInDb()
